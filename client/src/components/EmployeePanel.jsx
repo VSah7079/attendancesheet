@@ -73,7 +73,7 @@ const EmployeePanel = ({ employees, onAdd, onUpdate, onDelete }) => {
       </div>
       <p className="mt-1 mb-4 sm:mb-5 text-xs sm:text-sm text-gray-600">Add team members and set their daily rates.</p>
 
-      <div className="mb-6 p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg border-2 border-purple-200">
+      <div className="mb-6 p-4 bg-linear-to-r from-purple-50 to-pink-50 rounded-lg border-2 border-purple-200">
         <input
           type="text"
           placeholder="🔍 Search employees..."
@@ -93,7 +93,7 @@ const EmployeePanel = ({ employees, onAdd, onUpdate, onDelete }) => {
           <div className="flex flex-col">
             <label className="mb-2 text-xs font-bold text-gray-700">👤 Full Name</label>
             <input
-              className="rounded-lg border-2 border-gray-300 bg-gradient-to-b from-purple-50 to-white px-4 py-2.5 text-sm text-gray-900 font-medium shadow-md outline-none transition focus:border-teal-500 focus:ring-2 focus:ring-teal-200 placeholder:text-gray-500"
+              className="rounded-lg border-2 border-gray-300 bg-linear-to-b from-purple-50 to-white px-4 py-2.5 text-sm text-gray-900 font-medium shadow-md outline-none transition focus:border-teal-500 focus:ring-2 focus:ring-teal-200 placeholder:text-gray-500"
               required
               placeholder="e.g., John Doe"
               value={form.name}
@@ -103,7 +103,7 @@ const EmployeePanel = ({ employees, onAdd, onUpdate, onDelete }) => {
           <div className="flex flex-col">
             <label className="mb-2 text-xs font-bold text-gray-700">💰 Daily Rate (₹)</label>
             <input
-              className="rounded-lg border-2 border-gray-300 bg-gradient-to-b from-green-50 to-white px-4 py-2.5 text-sm text-gray-900 font-medium shadow-md outline-none transition focus:border-teal-500 focus:ring-2 focus:ring-teal-200 placeholder:text-gray-500"
+              className="rounded-lg border-2 border-gray-300 bg-linear-to-b from-green-50 to-white px-4 py-2.5 text-sm text-gray-900 font-medium shadow-md outline-none transition focus:border-teal-500 focus:ring-2 focus:ring-teal-200 placeholder:text-gray-500"
               required
               type="number"
               min="0"
@@ -162,7 +162,7 @@ const EmployeePanel = ({ employees, onAdd, onUpdate, onDelete }) => {
       </div>
 
       <div className="hidden overflow-x-auto rounded-lg border border-gray-200 md:block">
-        <table className="min-w-[500px] w-full border-collapse text-xs sm:text-sm lg:text-base">
+        <table className="min-w-125 w-full border-collapse text-xs sm:text-sm lg:text-base">
           <thead className="bg-gray-50 text-xs font-semibold text-gray-700">
             <tr>
               <th className="px-4 py-3 text-left">Name</th>

@@ -37,6 +37,7 @@ npm install --prefix client
 
 - Copy `server/.env.example` to `server/.env`
 - Set your MongoDB URL in `MONGODB_URI`
+- If Atlas blocks your network/IP, either whitelist your current IP in Atlas Network Access or use local MongoDB with `MONGODB_FALLBACK_URI=mongodb://127.0.0.1:27017/attendance`
 
 3. Run both frontend + backend:
 
@@ -76,3 +77,36 @@ npm run data:cleanup:dry
 # apply changes
 npm run data:cleanup:apply
 ```
+
+## Deploy On Vercel (Frontend + Backend)
+
+Deploy frontend and backend as two separate Vercel projects.
+
+### 1) Deploy Backend (server)
+
+- In Vercel, create a new project from `server` folder.
+- Framework: Other
+- Root Directory: `server`
+- Add environment variable:
+	- `MONGODB_URI=<your-atlas-connection-string>`
+- Deploy.
+
+Backend endpoints will be available at:
+
+- `https://<your-backend>.vercel.app/api/health`
+- `https://<your-backend>.vercel.app/api/employees`
+- `https://<your-backend>.vercel.app/api/attendance`
+
+### 2) Deploy Frontend (client)
+
+- In Vercel, create another project from `client` folder.
+- Framework: Vite
+- Root Directory: `client`
+- Add environment variable:
+	- `VITE_API_BASE_URL=https://<your-backend>.vercel.app/api`
+- Deploy.
+
+### 3) Verify
+
+- Open frontend URL and test employee/attendance CRUD.
+- If API calls fail with CORS, redeploy backend after checking environment variables.
