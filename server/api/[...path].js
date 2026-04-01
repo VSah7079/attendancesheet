@@ -34,7 +34,9 @@ export default async function handler(req, res) {
 	} catch (error) {
 		console.error("Serverless handler failed", error);
 		return res.status(500).json({
-			message: "Server error",
+			ok: false,
+			message: "Server error: database connection failed or configuration is invalid",
+			hint: "Check MONGODB_URI and Atlas network access, then redeploy server",
 			details: error?.message || "Unknown error",
 		});
 	}

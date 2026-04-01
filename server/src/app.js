@@ -18,11 +18,34 @@ app.use((_req, res, next) => {
   next();
 });
 
+app.get("/", (_req, res) => {
+  res.status(200).json({
+    ok: true,
+    message: "Attendance API is running",
+    endpoints: ["/api/health", "/api/employees", "/api/attendance"],
+  });
+});
+
+app.get("/api", (_req, res) => {
+  res.status(200).json({
+    ok: true,
+    message: "Use /api/health, /api/employees, or /api/attendance",
+  });
+});
+
 app.get("/api/health", (_req, res) => {
   res.json({ ok: true });
 });
 
 app.use("/api/employees", employeeRoutes);
 app.use("/api/attendance", attendanceRoutes);
+
+app.use((req, res) => {
+  res.status(404).json({
+    ok: false,
+    message: "Route not found",
+    path: req.originalUrl,
+  });
+});
 
 export default app;
