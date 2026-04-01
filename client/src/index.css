@@ -1,0 +1,98 @@
+@import "tailwindcss";
+
+:root {
+  --primary: #0f766e;
+  --primary-light: #14b8a6;
+  --primary-dark: #0d5a52;
+  --secondary: #f3f4f6;
+  --text-primary: #111827;
+  --text-secondary: #6b7280;
+  --border: #e5e7eb;
+  --success: #059669;
+  --danger: #dc2626;
+}
+
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+  background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+  color: var(--text-primary);
+}
+
+/* Smooth animations */
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+section {
+  animation: slideUp 0.3s ease;
+}
+
+/* Responsive Typography */
+@media (max-width: 640px) {
+  body {
+    font-size: 14px;
+  }
+  h1, h2, h3 {
+    letter-spacing: -0.02em;
+  }
+}
+
+/* Smooth scrolling and improved touch targets */
+body {
+  scroll-behavior: smooth;
+}
+
+button, a {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Improve table responsiveness */
+table {
+  table-layout: fixed;
+}
+
+/* Optimize form inputs for mobile */
+input[type="text"],
+input[type="email"],
+input[type="date"],
+input[type="number"],
+select,
+textarea {
+  font-size: 16px; /* Prevents zoom on iOS */
+  min-height: 44px;
+}
+
+/* Responsive padding/spacing adjustments */
+@media (max-width: 768px) {
+  .px-4 {
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+  }
+  
+  .py-4 {
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+  }
+}
+
+/* Better touch targets for mobile */
+@media (max-width: 640px) {
+  button:not(:disabled) {
+    padding: 0.6rem 0.9rem;
+    border-radius: 0.5rem;
+  }
+}
+
