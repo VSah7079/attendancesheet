@@ -1,7 +1,11 @@
 import axios from "axios";
 
+const apiBaseURL = import.meta.env.DEV
+  ? import.meta.env.VITE_API_BASE_URL || "/api"
+  : "/api";
+
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || "/api",
+  baseURL: apiBaseURL,
 });
 
 export const fetchEmployees = async () => {
