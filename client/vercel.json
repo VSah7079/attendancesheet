@@ -1,10 +1,6 @@
 {
   "rewrites": [
     {
-      "source": "/api/(.*)",
-      "destination": "https://server-owlbq16cs-vivek-kumar-sahs-projects-5f1a2f3c.vercel.app/api/$1"
-    },
-    {
       "source": "/(.*)",
       "destination": "/index.html"
     }

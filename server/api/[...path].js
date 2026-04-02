@@ -18,16 +18,26 @@ export default async function handler(req, res) {
 		return res.status(204).end();
 	}
 
+	const requestPath = req.url || "";
+	const isHealthOrInfoRoute =
+		requestPath === "/"
+		|| requestPath === "/api"
+		|| requestPath.startsWith("/api/health");
+
 	try {
-		if (!dbReadyPromise) {
-			dbReadyPromise = connectDB().catch((error) => {
-				dbReadyPromise = undefined;
-				throw error;
-			});
+		if (!isHealthOrInfoRoute) {
+			if (!dbReadyPromise) {
+				dbReadyPromise = connectDB().catch((error) => {
+					dbReadyPromise = undefined;
+					throw error;
+				});
+			}
+
+			await dbReadyPromise;
 		}
 
-		await dbReadyPromise;
 		return await new Promise((resolve) => {
+			res.on("close", resolve);
 			app(req, res);
 			res.on("finish", resolve);
 		});

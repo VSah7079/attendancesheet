@@ -18,14 +18,53 @@ const App = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  const formatLoadError = (label, err) => {
+    const status = err?.response?.status;
+    const serverMessage = err?.response?.data?.message;
+
+    if (status === 401) {
+      return `${label} API unauthorized (401). Check Vercel Deployment Protection/Auth on backend.`;
+    }
+
+    if (status === 500) {
+      return `${label} API failed (500). ${serverMessage || "Check backend logs and MongoDB URI."}`;
+    }
+
+    if (err?.request && !err?.response) {
+      return `${label} API unreachable. Verify VITE_API_BASE_URL and backend deployment.`;
+    }
+
+    return serverMessage || `${label} data load failed`;
+  };
+
   const loadData = async () => {
+    setLoading(true);
     try {
       setError("");
-      const [empData, attData] = await Promise.all([fetchEmployees(), fetchAttendance()]);
-      setEmployees(empData);
-      setAttendanceRows(attData);
+      const [employeeResult, attendanceResult] = await Promise.allSettled([
+        fetchEmployees(),
+        fetchAttendance(),
+      ]);
+
+      const errors = [];
+
+      if (employeeResult.status === "fulfilled") {
+        setEmployees(employeeResult.value);
+      } else {
+        errors.push(formatLoadError("Employees", employeeResult.reason));
+      }
+
+      if (attendanceResult.status === "fulfilled") {
+        setAttendanceRows(attendanceResult.value);
+      } else {
+        errors.push(formatLoadError("Attendance", attendanceResult.reason));
+      }
+
+      if (errors.length > 0) {
+        setError(errors.join(" | "));
+      }
     } catch (err) {
-      setError(err.response?.data?.message || "Unable to load dashboard data");
+      setError(formatLoadError("Dashboard", err));
     } finally {
       setLoading(false);
     }

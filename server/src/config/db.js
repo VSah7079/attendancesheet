@@ -2,17 +2,20 @@ import mongoose from "mongoose";
 
 const DEFAULT_LOCAL_URI = "mongodb://127.0.0.1:27017/attendance";
 
+const isServerlessProduction =
+  process.env.VERCEL === "1" || process.env.NODE_ENV === "production";
+
 const connectWithUri = async (uri, label = "MongoDB") => {
   await mongoose.connect(uri, {
-    serverSelectionTimeoutMS: 8000,
+    serverSelectionTimeoutMS: 2500,
   });
   console.log(`${label} connected`);
 };
 
 export const connectDB = async () => {
   const uri = process.env.MONGODB_URI?.trim();
-  const fallbackUri =
-    process.env.MONGODB_FALLBACK_URI?.trim() || DEFAULT_LOCAL_URI;
+  const fallbackUri = process.env.MONGODB_FALLBACK_URI?.trim()
+    || (isServerlessProduction ? "" : DEFAULT_LOCAL_URI);
 
   if (!uri) {
     throw new Error("MONGODB_URI is missing in environment variables");
