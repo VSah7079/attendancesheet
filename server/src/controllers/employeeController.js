@@ -1,4 +1,7 @@
 import { Employee } from "../models/Employee.js";
+import { createEmployeesExcelLocally } from "../utils/excelExport.js";
+
+import XLSX from "xlsx";
 
 const normalizeSpaces = (value) => String(value || "").trim().replace(/\s+/g, " ");
 
@@ -118,5 +121,69 @@ export const updateEmployee = async (req, res) => {
     return res.json(updated);
   } catch (error) {
     return res.status(500).json({ message: "Failed to update employee", error: error.message });
+  }
+};
+
+export const exportEmployeesToExcel = async (_req, res) => {
+  try {
+    const employees = await Employee.find().sort({ name: 1 });
+
+    if (employees.length === 0) {
+      return res.status(400).json({ message: "No employees to export" });
+    }
+
+    // Prepare data for Excel
+    const data = employees.map((emp) => ({
+      "Employee ID": emp.employeeId,
+      "Name": emp.name,
+      "Daily Rate": emp.dailyRate,
+      "Created": new Date(emp.createdAt).toLocaleDateString(),
+      "Updated": new Date(emp.updatedAt).toLocaleDateString(),
+    }));
+
+    // Create workbook and worksheet
+    const worksheet = XLSX.utils.json_to_sheet(data);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Employees");
+
+    // Set column widths
+    const columnWidths = [
+      { wch: 20 }, // Employee ID
+      { wch: 25 }, // Name
+      { wch: 15 }, // Daily Rate
+      { wch: 15 }, // Created
+      { wch: 15 }, // Updated
+    ];
+    worksheet["!cols"] = columnWidths;
+
+    // Generate file
+    const fileName = `employees_${new Date().toISOString().split("T")[0]}.xlsx`;
+    res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+    res.setHeader("Content-Disposition", `attachment; filename="${fileName}"`);
+
+    const buffer = XLSX.write(workbook, { bookType: "xlsx", type: "buffer" });
+    return res.send(buffer);
+  } catch (error) {
+    return res.status(500).json({ message: "Failed to export employees", error: error.message });
+  }
+};
+
+export const exportEmployeesToExcelLocal = async (_req, res) => {
+  try {
+    const employees = await Employee.find().sort({ name: 1 });
+
+    if (employees.length === 0) {
+      return res.status(400).json({ success: false, message: "No employees to export" });
+    }
+
+    const result = createEmployeesExcelLocally(employees);
+
+    if (!result.success) {
+      return res.status(400).json(result);
+    }
+
+    return res.json(result);
+  } catch (error) {
+    return res.status(500).json({ success: false, message: "Failed to export employees", error: error.message });
   }
 };

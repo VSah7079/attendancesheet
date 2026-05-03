@@ -81,4 +81,83 @@ export const downloadEmployeesCSV = (employees) => {
 
   const today = new Date().toISOString().slice(0, 10);
   exportToCSV(data, `employees_${today}.csv`, headers);
+  };
+
+  export const downloadEmployeesExcel = async () => {
+    try {
+      const response = await fetch("/api/employees/export/excel");
+      if (!response.ok) {
+        throw new Error("Failed to download employees Excel file");
+      }
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `employees_${new Date().toISOString().split("T")[0]}.xlsx`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error("Error downloading employees Excel:", error);
+      alert("Failed to download Excel file");
+    }
+  };
+
+  export const downloadAttendanceExcel = async () => {
+    try {
+      const response = await fetch("/api/attendance/export/excel");
+      if (!response.ok) {
+        throw new Error("Failed to download attendance Excel file");
+      }
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = `attendance_${new Date().toISOString().split("T")[0]}.xlsx`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error("Error downloading attendance Excel:", error);
+      alert("Failed to download Excel file");
+    }
+};
+// Save Attendance to Local Folder (Local Development Only)
+export const saveAttendanceExcelLocal = async () => {
+  try {
+    const response = await fetch("/api/attendance/export/excel-local");
+    if (!response.ok) {
+      throw new Error("Failed to save attendance Excel file locally");
+    }
+    const data = await response.json();
+    if (data.success) {
+      alert(`✅ Attendance Excel file saved to local folder!\n\nPath: ${data.filePath}`);
+      return data;
+    } else {
+      throw new Error(data.message);
+    }
+  } catch (error) {
+    console.error("Error saving attendance Excel:", error);
+    alert("⚠️ Only works in Local Development.\n\nFor Vercel/Live: Use Excel Download instead.\n\nError: " + error.message);
+  }
+};
+
+// Save Employees to Local Folder (Local Development Only)
+export const saveEmployeesExcelLocal = async () => {
+  try {
+    const response = await fetch("/api/employees/export/excel-local");
+    if (!response.ok) {
+      throw new Error("Failed to save employees Excel file locally");
+    }
+    const data = await response.json();
+    if (data.success) {
+      alert(`✅ Employees Excel file saved to local folder!\n\nPath: ${data.filePath}`);
+      return data;
+    } else {
+      throw new Error(data.message);
+    }
+  } catch (error) {
+    console.error("Error saving employees Excel:", error);
+    alert("⚠️ Only works in Local Development.\n\nFor Vercel/Live: Use Excel Download instead.\n\nError: " + error.message);
+  }
 };

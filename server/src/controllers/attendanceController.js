@@ -1,5 +1,8 @@
 import { Attendance } from "../models/Attendance.js";
 import { Employee } from "../models/Employee.js";
+import { createAttendanceExcelLocally } from "../utils/excelExport.js";
+
+import XLSX from "xlsx";
 
 const sortByDateDesc = (a, b) => {
   const dateA = new Date(a.date).getTime();
@@ -246,5 +249,83 @@ export const deleteAttendance = async (req, res) => {
     return res.json({ message: "Attendance deleted successfully!" });
   } catch (error) {
     return res.status(500).json({ message: "Failed to delete attendance", error: error.message });
+  }
+};
+
+export const exportAttendanceToExcel = async (_req, res) => {
+  try {
+    const attendanceRecords = await Attendance.find().lean();
+    const employees = await Employee.find().lean();
+
+    if (attendanceRecords.length === 0) {
+      return res.status(400).json({ message: "No attendance records to export" });
+    }
+
+    // Create a map of daily rates
+    const rateByName = new Map(employees.map((emp) => [emp.name, emp.dailyRate]));
+
+    // Prepare data for Excel
+    const data = attendanceRecords
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+      .map((record) => {
+        const dailyRate = rateByName.get(record.name) || 0;
+        const amount = ((Number(record.hours || 0) / 8) * Number(dailyRate)).toFixed(2);
+
+        return {
+          "Date": formatDateDMY(record.date),
+          "Employee Name": record.name,
+          "Hours": Number(record.hours),
+          "Location": record.location,
+          "Daily Rate": dailyRate,
+          "Amount": amount,
+        };
+      });
+
+    // Create workbook and worksheet
+    const worksheet = XLSX.utils.json_to_sheet(data);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Attendance");
+
+    // Set column widths
+    const columnWidths = [
+      { wch: 15 }, // Date
+      { wch: 20 }, // Employee Name
+      { wch: 10 }, // Hours
+      { wch: 20 }, // Location
+      { wch: 12 }, // Daily Rate
+      { wch: 12 }, // Amount
+    ];
+    worksheet["!cols"] = columnWidths;
+
+    // Generate file
+    const fileName = `attendance_${new Date().toISOString().split("T")[0]}.xlsx`;
+    res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+    res.setHeader("Content-Disposition", `attachment; filename="${fileName}"`);
+
+    const buffer = XLSX.write(workbook, { bookType: "xlsx", type: "buffer" });
+    return res.send(buffer);
+  } catch (error) {
+    return res.status(500).json({ message: "Failed to export attendance", error: error.message });
+  }
+};
+
+export const exportAttendanceToExcelLocal = async (_req, res) => {
+  try {
+    const attendanceRecords = await Attendance.find().lean();
+    const employees = await Employee.find().lean();
+
+    if (attendanceRecords.length === 0) {
+      return res.status(400).json({ success: false, message: "No attendance records to export" });
+    }
+
+    const result = createAttendanceExcelLocally(attendanceRecords, employees);
+
+    if (!result.success) {
+      return res.status(400).json(result);
+    }
+
+    return res.json(result);
+  } catch (error) {
+    return res.status(500).json({ success: false, message: "Failed to export attendance", error: error.message });
   }
 };

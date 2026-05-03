@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { downloadEmployeesCSV } from "../utils/csvExport";
+import { downloadEmployeesCSV, downloadEmployeesExcel, saveEmployeesExcelLocal } from "../utils/csvExport";
 
 const EmployeePanel = ({ employees, onAdd, onUpdate, onDelete }) => {
   const [form, setForm] = useState({ name: "", dailyRate: "" });
@@ -63,13 +63,31 @@ const EmployeePanel = ({ employees, onAdd, onUpdate, onDelete }) => {
           <span className="text-xl">👥</span>
           <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Team Setup</h2>
         </div>
-        <button
+          <div className="flex gap-2 flex-wrap">
+            <button
+              onClick={() => downloadEmployeesExcel()}
+              disabled={employees.length === 0}
+              className="rounded-lg bg-green-600 hover:bg-green-700 disabled:bg-gray-400 px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-semibold text-white shadow-sm transition"
+              title="Download Excel (Works on Vercel & Local)"
+            >
+              📊 Excel
+            </button>
+            <button
+              onClick={() => saveEmployeesExcelLocal()}
+              disabled={employees.length === 0}
+              className="rounded-lg bg-emerald-600 hover:bg-emerald-700 disabled:bg-gray-400 px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-semibold text-white shadow-sm transition"
+              title="Save to folder (Local Development Only)"
+            >
+              💾 Save Local
+            </button>
+            <button
           onClick={() => downloadEmployeesCSV(employees)}
           disabled={employees.length === 0}
           className="rounded-lg bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-semibold text-white shadow-sm transition"
         >
-          📥 Export
+            📥 CSV
         </button>
+          </div>
       </div>
       <p className="mt-1 mb-4 sm:mb-5 text-xs sm:text-sm text-gray-600">Add team members and set their daily rates.</p>
 

@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { downloadAttendanceCSV } from "../utils/csvExport";
+import { downloadAttendanceCSV, downloadAttendanceExcel, saveAttendanceExcelLocal } from "../utils/csvExport";
 
 const getDateInput = (value) => {
   if (!value) return "";
@@ -97,13 +97,31 @@ const AttendancePanel = ({ employees, rows, onCreate, onUpdate, onDelete }) => {
           <span className="text-2xl">📊</span>
           <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Attendance Log</h2>
         </div>
-        <button
+        <div className="flex gap-2 flex-wrap">
+            <button
+              onClick={() => downloadAttendanceExcel()}
+              disabled={rows.length === 0}
+              className="rounded-lg bg-green-600 hover:bg-green-700 disabled:bg-gray-400 px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-semibold text-white shadow-sm transition"
+              title="Download Excel (Works on Vercel & Local)"
+            >
+              📊 Excel
+            </button>
+            <button
+              onClick={() => saveAttendanceExcelLocal()}
+              disabled={rows.length === 0}
+              className="rounded-lg bg-emerald-600 hover:bg-emerald-700 disabled:bg-gray-400 px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-semibold text-white shadow-sm transition"
+              title="Save to folder (Local Development Only)"
+            >
+              💾 Save Local
+            </button>
+            <button
           onClick={() => downloadAttendanceCSV(rows, employees)}
           disabled={rows.length === 0}
           className="rounded-lg bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm font-semibold text-white shadow-sm transition"
         >
-          📥 Export CSV
+            📥 CSV
         </button>
+          </div>
       </div>
       <p className="mt-2 mb-6 sm:mb-7 text-xs sm:text-sm text-gray-600">Track entries with location and automatic payment calculation.</p>
 
